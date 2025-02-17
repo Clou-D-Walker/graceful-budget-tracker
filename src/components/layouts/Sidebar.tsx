@@ -7,7 +7,7 @@ import {
   WalletCards,
   Settings,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const navigation = [
   {
@@ -59,10 +59,10 @@ export const Sidebar = () => {
                     )}
                     asChild
                   >
-                    <a href={item.href}>
+                    <Link to={item.href}>
                       <item.icon className="mr-2 h-4 w-4" />
                       {item.name}
-                    </a>
+                    </Link>
                   </Button>
                 ))}
               </nav>
