@@ -1,6 +1,6 @@
 
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { Button } from "@/components/ui/button";
+import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import {
   Card,
   CardContent,
@@ -15,52 +15,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
-
-const expenses = [
-  {
-    id: 1,
-    description: "Grocery Shopping",
-    amount: 125.50,
-    category: "Food",
-    date: "2024-03-15",
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: 2,
-    description: "Netflix Subscription",
-    amount: 15.99,
-    category: "Entertainment",
-    date: "2024-03-14",
-    paymentMethod: "Debit Card",
-  },
-  {
-    id: 3,
-    description: "Gas",
-    amount: 45.00,
-    category: "Transportation",
-    date: "2024-03-13",
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: 4,
-    description: "Electricity Bill",
-    amount: 89.99,
-    category: "Utilities",
-    date: "2024-03-12",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: 5,
-    description: "Restaurant Dinner",
-    amount: 65.30,
-    category: "Food",
-    date: "2024-03-11",
-    paymentMethod: "Credit Card",
-  },
-];
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { expenseApi } from "@/lib/api";
 
 const Expenses = () => {
+  const queryClient = useQueryClient();
+  const { data: expenses, isLoading } = useQuery({
+    queryKey: ['expenses'],
+    queryFn: expenseApi.getExpenses,
+  });
+
+  const handleExpenseAdded = () => {
+    queryClient.invalidateQueries({ queryKey: ['expenses'] });
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col space-y-6">
@@ -71,9 +39,7 @@ const Expenses = () => {
               Manage and track your expenses
             </p>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add Expense
-          </Button>
+          <AddExpenseDialog onExpenseAdded={handleExpenseAdded} />
         </div>
 
         <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -109,24 +75,28 @@ const Expenses = () => {
             <CardDescription>A detailed list of all your expenses</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {expenses.map((expense) => (
-                <div
-                  key={expense.id}
-                  className="flex items-center justify-between rounded-lg border p-4"
-                >
-                  <div className="space-y-1">
-                    <p className="font-medium">{expense.description}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {expense.category} • {expense.date} • {expense.paymentMethod}
-                    </p>
+            {isLoading ? (
+              <div className="text-center py-4">Loading expenses...</div>
+            ) : (
+              <div className="space-y-4">
+                {expenses?.data?.map((expense: any) => (
+                  <div
+                    key={expense.id}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
+                    <div className="space-y-1">
+                      <p className="font-medium">{expense.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {expense.category} • {new Date(expense.date).toLocaleDateString()} • {expense.paymentMethod}
+                      </p>
+                    </div>
+                    <div className="font-medium">
+                      ${Number(expense.amount).toFixed(2)}
+                    </div>
                   </div>
-                  <div className="font-medium">
-                    ${expense.amount.toFixed(2)}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
