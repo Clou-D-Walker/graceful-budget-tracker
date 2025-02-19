@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import Expenses from "./pages/Expenses";
 import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
@@ -43,6 +44,14 @@ const AuthenticatedApp = () => (
       element={
         <PrivateRoute>
           <Analytics />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/settings"
+      element={
+        <PrivateRoute>
+          <Settings />
         </PrivateRoute>
       }
     />

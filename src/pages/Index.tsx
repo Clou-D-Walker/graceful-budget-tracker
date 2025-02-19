@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import {
   LineChart,
   Line,
@@ -17,7 +18,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Plus } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const data = [
   { name: "Jan", amount: 1200 },
@@ -53,6 +54,12 @@ const recentExpenses = [
 ];
 
 const Index = () => {
+  const queryClient = useQueryClient();
+
+  const handleExpenseAdded = () => {
+    queryClient.invalidateQueries({ queryKey: ['expenses'] });
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col space-y-6">
@@ -63,9 +70,7 @@ const Index = () => {
               Overview of your expenses and spending patterns
             </p>
           </div>
-          <Button className="h-10">
-            <Plus className="mr-2 h-4 w-4" /> Add Expense
-          </Button>
+          <AddExpenseDialog onExpenseAdded={handleExpenseAdded} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
